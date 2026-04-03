@@ -636,6 +636,29 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   };
 
   const handleRetryUserMessage = (messageId) => {
+    if (isDraftChatActive) {
+      const draftUserIndex = draftMessages.findIndex(
+        (message) => message.id === messageId && message.sender === 'user'
+      );
+
+      if (draftUserIndex === -1) {
+        return;
+      }
+
+      const draftUserMessage = draftMessages[draftUserIndex];
+      const isLastDraftMessage = draftUserIndex === draftMessages.length - 1;
+
+      if (!isLastDraftMessage || !draftUserMessage?.text?.trim()) {
+        return;
+      }
+
+      setDraftMessages((prev) => prev.filter((message) => message.id !== draftUserMessage.id));
+      setRetryEditTarget(null);
+      setInputMessage(draftUserMessage.text);
+      setRetryInputFocusKey((prev) => prev + 1);
+      return;
+    }
+
     retryUserMessageFlow({
       currentChatId,
       isDraftChatActive,
