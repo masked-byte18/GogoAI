@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { googleSigninRequest } from '../../services/authApi';
 
 const GOOGLE_SCRIPT_ID = 'google-identity-script';
@@ -33,8 +33,37 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
   const buttonRef = useRef(null);
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
+  const lastRenderedWidthRef = useRef(0);
   const [ready, setReady] = useState(false);
   const clientId = String(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
+
+  const renderGoogleButton = useCallback(() => {
+    if (!buttonRef.current || !window.google?.accounts?.id) {
+      return;
+    }
+
+    const hostWidth = Math.floor(buttonRef.current.clientWidth || 0);
+    if (hostWidth <= 0) {
+      return;
+    }
+
+    const nextWidth = Math.max(220, Math.min(320, hostWidth));
+    if (Math.abs(nextWidth - lastRenderedWidthRef.current) < 2) {
+      return;
+    }
+
+    lastRenderedWidthRef.current = nextWidth;
+    buttonRef.current.innerHTML = '';
+    window.google.accounts.id.renderButton(buttonRef.current, {
+      theme: 'outline',
+      size: 'large',
+      width: nextWidth,
+      text: 'continue_with',
+      shape: 'pill'
+    });
+
+    setReady(true);
+  }, []);
 
   useEffect(() => {
     onSuccessRef.current = onSuccess;
@@ -79,16 +108,7 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
           }
         });
 
-        buttonRef.current.innerHTML = '';
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: 'outline',
-          size: 'large',
-          width: 320,
-          text: 'continue_with',
-          shape: 'pill'
-        });
-
-        setReady(true);
+        renderGoogleButton();
       } catch {
         if (!cancelled) {
           onErrorRef.current?.('Could not load Google sign-in right now.');
@@ -101,7 +121,32 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
     return () => {
       cancelled = true;
     };
-  }, [clientId]);
+  }, [clientId, renderGoogleButton]);
+
+  useEffect(() => {
+    if (!buttonRef.current || !ready) {
+      return;
+    }
+
+    if (typeof ResizeObserver !== 'function') {
+      return;
+    }
+
+    let rafId = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        renderGoogleButton();
+      });
+    });
+
+    observer.observe(buttonRef.current);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+    };
+  }, [ready, renderGoogleButton]);
 
   return (
     <div className='google-auth-wrap'>

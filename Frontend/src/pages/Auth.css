@@ -235,8 +235,20 @@
 
 .google-btn-host {
   width: 100%;
+  min-width: 0;
   display: flex;
   justify-content: center;
+}
+
+.google-btn-host > div,
+.google-btn-host iframe {
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .auth-shell {
+    padding: 1.3rem 1rem;
+  }
 }
 
 .auth-links {
