@@ -11,7 +11,6 @@
   border: 1px solid var(--border-subtle);
   box-shadow: 0 30px 60px -20px var(--shadow-main);
   padding: 2.5rem;
-  animation: loadIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   position: relative;
   overflow: hidden;
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
