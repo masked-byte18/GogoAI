@@ -25,6 +25,7 @@ const Home = () => {
     handleTogglePinChat,
     handleLogout,
     inputMessage,
+    aiLimitNotice,
     isAuthenticated,
     isAiThinking,
     isCurrentChatThinking,
@@ -96,6 +97,7 @@ const Home = () => {
             isAiThinking={isAiThinking}
             onStopThinking={handleStopThinking}
             retryInputFocusKey={retryInputFocusKey}
+            aiLimitNotice={aiLimitNotice}
           />
         </section>
       </div>

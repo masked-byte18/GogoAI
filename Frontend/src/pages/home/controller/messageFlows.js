@@ -7,6 +7,7 @@ import {
 } from '../../../store/chatSlice';
 import { guestAiResponseRequest } from '../../../services/chatApi';
 import { generateChatTitleFromResponse } from '../chatHelpers';
+import { isAiTokenLimitError } from '../../../utils/aiLimit';
 
 export const handleGuestSendFlow = async ({
   dispatch,
@@ -19,7 +20,8 @@ export const handleGuestSendFlow = async ({
   setIsDraftChatActive,
   setDraftMessages,
   setRetryEditTarget,
-  setInputMessage
+  setInputMessage,
+  onAiLimitReached
 }) => {
   const userText = inputMessage;
   const trimmedUserText = userText.trim();
@@ -109,6 +111,11 @@ export const handleGuestSendFlow = async ({
         }
       })
     );
+
+    if (isAiTokenLimitError(error)) {
+      onAiLimitReached?.();
+    }
+
     console.error('Guest AI response failed:', error);
     pendingPromptRef.current = null;
   } finally {

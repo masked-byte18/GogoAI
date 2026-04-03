@@ -27,6 +27,7 @@ export const bootstrapAuthenticatedSession = async ({
   setIsDraftResponding,
   ignoreNextAiResponseRef,
   pendingPromptRef,
+  onAiError,
   onSocketReady,
   isDisposedRef
 }) => {
@@ -136,6 +137,7 @@ export const bootstrapAuthenticatedSession = async ({
       pendingPromptRef.current = null;
       setThinkingChatId(null);
       setIsDraftResponding(false);
+      onAiError?.(error);
       console.error('AI error from server:', error);
     });
 

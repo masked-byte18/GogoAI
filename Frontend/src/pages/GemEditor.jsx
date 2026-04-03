@@ -12,8 +12,11 @@ import {
   setupPrivateAccessRequest,
   updateBotRequest
 } from '../services/botApi';
+import { AI_LIMIT_NOTICE_TEXT, isAiTokenLimitError } from '../utils/aiLimit';
 import '../components/home/HomeLayout.css';
 import './GemEditor.css';
+
+const AI_LIMIT_NOTICE_DURATION_MS = 3600;
 
 const DEFAULT_FORM = {
   name: '',
@@ -138,6 +141,7 @@ const GemEditor = () => {
   const [previewInput, setPreviewInput] = useState('');
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState('');
+  const [previewLimitNotice, setPreviewLimitNotice] = useState('');
   const [hasGlobalPrivatePassword, setHasGlobalPrivatePassword] = useState(false);
   const [isPrivateSetupOpen, setIsPrivateSetupOpen] = useState(false);
   const [setupPassword, setSetupPassword] = useState('');
@@ -145,6 +149,20 @@ const GemEditor = () => {
   const [setupPrivateError, setSetupPrivateError] = useState('');
   const [isSettingPrivatePassword, setIsSettingPrivatePassword] = useState(false);
   const [showSetupPassword, setShowSetupPassword] = useState(false);
+
+  useEffect(() => {
+    if (!previewLimitNotice) {
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setPreviewLimitNotice('');
+    }, AI_LIMIT_NOTICE_DURATION_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [previewLimitNotice]);
 
   useEffect(() => {
     let cancelled = false;
@@ -363,6 +381,10 @@ const GemEditor = () => {
       setPreviewMessages((prev) => prev.filter((message) => message.id !== userMessageId));
       setPreviewInput(userPrompt);
       setPreviewError(getPreviewErrorMessage(error));
+
+      if (isAiTokenLimitError(error)) {
+        setPreviewLimitNotice(AI_LIMIT_NOTICE_TEXT);
+      }
     } finally {
       setIsPreviewLoading(false);
     }
@@ -605,6 +627,7 @@ const GemEditor = () => {
                     handlePreviewSend();
                   }}
                 >
+                  {previewLimitNotice ? <p className='ai-limit-notice'>{previewLimitNotice}</p> : null}
                   <input
                     value={previewInput}
                     onChange={(event) => {

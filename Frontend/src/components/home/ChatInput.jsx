@@ -7,7 +7,8 @@ const ChatInput = ({
   handleSendMessage,
   isAiThinking = false,
   onStopThinking,
-  retryInputFocusKey = 0
+  retryInputFocusKey = 0,
+  aiLimitNotice = ''
 }) => {
   const inputRef = useRef(null);
 
@@ -33,6 +34,7 @@ const ChatInput = ({
     
   return (
     <form className='chat-input-area' onSubmit={handleSubmit}>
+      {aiLimitNotice ? <p className='chat-input-limit-notice'>{aiLimitNotice}</p> : null}
       <input
         ref={inputRef}
         type='text'

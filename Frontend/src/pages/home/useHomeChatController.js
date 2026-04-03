@@ -25,10 +25,12 @@ import { bootstrapAuthenticatedSession, logoutFlow } from './controller/sessionH
 import { cancelGuestResponseRequest } from '../../services/chatApi';
 import { fetchMyBotsRequest, fetchPrivateAccessSettingsRequest, verifyPrivateAccessRequest } from '../../services/botApi';
 import { hasAuthSessionHint } from '../../services/authSession';
+import { AI_LIMIT_NOTICE_TEXT, isAiTokenLimitError } from '../../utils/aiLimit';
 
 const DRAFT_CHAT_INPUT_KEY = 'draft-chat';
 const CHAT_INPUT_DRAFTS_STORAGE_KEY = 'chat-input-drafts-v1';
 const EPHEMERAL_CHAT_MESSAGES_STORAGE_KEY = 'ephemeral-chat-messages-v1';
+const AI_LIMIT_NOTICE_DURATION_MS = 3600;
 
 const readDraftsFromLocalStorage = () => {
   if (typeof window === 'undefined') {
@@ -85,6 +87,7 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   const [isPrivateGemsUnlockedInManager, setIsPrivateGemsUnlockedInManager] = useState(false);
   const [inputDraftByContext, setInputDraftByContext] = useState(() => readDraftsFromLocalStorage());
   const [retryInputFocusKey, setRetryInputFocusKey] = useState(0);
+  const [aiLimitNotice, setAiLimitNotice] = useState('');
   const [retryEditTarget, setRetryEditTarget] = useState(null);
   const [draftGemContext, setDraftGemContext] = useState(() => {
     const stateDraftGem = location?.state?.draftGemContext;
@@ -103,6 +106,20 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   const ignoreNextAiResponseRef = useRef(false);
   const pendingPromptRef = useRef(null);
   const guestAbortControllerRef = useRef(null);
+  const aiLimitNoticeTimerRef = useRef(null);
+
+  const showAiLimitNotice = () => {
+    setAiLimitNotice(AI_LIMIT_NOTICE_TEXT);
+
+    if (aiLimitNoticeTimerRef.current) {
+      clearTimeout(aiLimitNoticeTimerRef.current);
+    }
+
+    aiLimitNoticeTimerRef.current = setTimeout(() => {
+      setAiLimitNotice('');
+      aiLimitNoticeTimerRef.current = null;
+    }, AI_LIMIT_NOTICE_DURATION_MS);
+  };
 
   const activeInputContextKey = resolveInputContextKey({
     isDraftChatActive,
@@ -305,6 +322,14 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   }, []);
 
   useEffect(() => {
+    return () => {
+      if (aiLimitNoticeTimerRef.current) {
+        clearTimeout(aiLimitNoticeTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       window.localStorage.setItem(
         CHAT_INPUT_DRAFTS_STORAGE_KEY,
@@ -481,6 +506,11 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
       setIsDraftResponding,
       ignoreNextAiResponseRef,
       pendingPromptRef,
+      onAiError: (error) => {
+        if (isAiTokenLimitError(error)) {
+          showAiLimitNotice();
+        }
+      },
       onSocketReady: (socketInstance) => {
         tempSocket = socketInstance;
       },
@@ -529,7 +559,8 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
         setIsDraftChatActive,
         setDraftMessages,
         setRetryEditTarget,
-        setInputMessage
+        setInputMessage,
+        onAiLimitReached: showAiLimitNotice
       });
       return;
     }
@@ -681,6 +712,7 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
     handleToggleArchive,
     handleToggleFeedback,
     handleTogglePinChat,
+    aiLimitNotice,
     inputMessage,
     isAuthenticated,
     isAiThinking,
