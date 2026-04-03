@@ -406,60 +406,58 @@
   border-color: var(--border-subtle);
 }
 
-.feature-upload-btn {
+.gem-actions-menu-wrap {
   position: relative;
-  border-color: color-mix(in srgb, var(--border-subtle) 95%, transparent);
-  background: color-mix(in srgb, var(--surface-base) 92%, transparent);
 }
 
-.feature-upload-btn svg {
-  width: 18px;
-  height: 18px;
+.gem-actions-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 218px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-base) 96%, #000);
+  box-shadow: 0 18px 36px -28px var(--shadow-main);
+  padding: 0.35rem;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
 }
 
-.feature-upload-btn.active {
-  color: #f5cb58;
-  border-color: color-mix(in srgb, #f4c64f 45%, var(--border-subtle));
-  background: color-mix(in srgb, #f4c64f 12%, transparent);
-}
-
-.feature-upload-btn:hover,
-.feature-upload-btn:focus-visible {
+.gem-actions-menu-item {
+  width: 100%;
+  min-height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
   color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.38rem 0.52rem;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.gem-actions-menu-item:hover {
   background: var(--surface-hover);
   border-color: var(--border-subtle);
 }
 
-.feature-upload-btn:disabled {
+.gem-actions-menu-item:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
 
-.feature-upload-tooltip {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  transform: translateX(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  border-radius: 6px;
-  border: 1px solid var(--border-subtle);
-  background: color-mix(in srgb, var(--surface-base) 96%, #000);
-  color: color-mix(in srgb, var(--text-main) 90%, var(--text-sub));
-  font-size: 0.66rem;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
-  padding: 0.24rem 0.42rem;
-  opacity: 0;
-  z-index: 4;
-  box-shadow: 0 10px 24px -18px var(--shadow-main);
-  transition: opacity 0.16s ease, transform 0.16s ease;
+.gem-actions-menu-item.danger {
+  color: color-mix(in srgb, #ef4444 75%, var(--text-main));
 }
 
-.feature-upload-btn:hover .feature-upload-tooltip,
-.feature-upload-btn:focus-visible .feature-upload-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-1px);
+.gem-actions-menu-item.danger:hover {
+  background: color-mix(in srgb, #ef4444 10%, var(--surface-hover));
+  border-color: color-mix(in srgb, #ef4444 38%, var(--border-subtle));
 }
 
 .icon-btn-ghost {

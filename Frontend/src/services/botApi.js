@@ -102,6 +102,14 @@ export const updateFeaturedInPublicRequest = async (botId, featuredInPublic) => 
   return response.data?.bot || null;
 };
 
+export const deleteBotRequest = async (botId) => {
+  const response = await axios.delete(`${BOT_API_BASE}/${botId}`, {
+    withCredentials: true
+  });
+
+  return response.data || null;
+};
+
 const appendTruthy = (formData, key, value) => {
   if (value == null) {
     return;

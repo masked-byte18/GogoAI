@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user.model');
+const chatModel = require('../models/chat.model');
+const messageModel = require('../models/message.model');
 const {
 	botModel,
 	countWords,
@@ -10,6 +12,7 @@ const {
 } = require('../models/bot.model');
 const { uploadFile } = require('../services/storage.service');
 const { generateResponse } = require('../services/ai.service');
+const { deleteMemoryByMessageIds } = require('../services/vector.service');
 
 const PRIVATE_BOT_TOKEN_TTL = '1h';
 const ALLOWED_KNOWLEDGE_MIME_TYPES = new Set([
@@ -397,10 +400,37 @@ async function deleteBot(req, res) {
 		const botId = req.params.id;
 		const userId = req.user?._id;
 
-		const bot = await botModel.findOneAndDelete({ _id: botId, user: userId });
+		const bot = await botModel.findOne({ _id: botId, user: userId }).lean();
 		if (!bot) {
 			return res.status(404).json({ message: 'Bot not found' });
 		}
+
+		const chatsForBot = await chatModel.find({ bot: botId }).select('_id').lean();
+		const chatIds = chatsForBot.map((chat) => chat?._id).filter(Boolean);
+
+		const relatedMessages = await messageModel
+			.find({
+				$or: [
+					{ bot: botId },
+					chatIds.length > 0 ? { chat: { $in: chatIds } } : null
+				].filter(Boolean)
+			})
+			.select('_id')
+			.lean();
+
+		const messageIds = relatedMessages.map((message) => message?._id).filter(Boolean);
+
+		await deleteMemoryByMessageIds(messageIds);
+
+		await messageModel.deleteMany({
+			$or: [
+				{ bot: botId },
+				chatIds.length > 0 ? { chat: { $in: chatIds } } : null
+			].filter(Boolean)
+		});
+
+		await chatModel.deleteMany({ bot: botId });
+		await botModel.deleteOne({ _id: botId, user: userId });
 
 		return res.status(200).json({ message: 'Bot deleted successfully', botId });
 	} catch (error) {
