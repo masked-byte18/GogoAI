@@ -411,9 +411,7 @@
 }
 
 .gem-actions-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
+  position: fixed;
   min-width: 218px;
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
@@ -439,6 +437,18 @@
   padding: 0.38rem 0.52rem;
   cursor: pointer;
   transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.gem-actions-menu-item-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gem-actions-menu-item-content svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .gem-actions-menu-item:hover {

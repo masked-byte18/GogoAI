@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ChatSidebar from '../components/home/ChatSidebar';
 import ChatHeader from '../components/home/ChatHeader';
@@ -52,6 +53,24 @@ const EditIcon = () => (
   <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.9' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
     <path d='M12 20h9'></path>
     <path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z'></path>
+  </svg>
+);
+
+const UploadMenuIcon = () => (
+  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.9' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+    <path d='M12 16V4'></path>
+    <path d='M8 8l4-4 4 4'></path>
+    <path d='M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4'></path>
+  </svg>
+);
+
+const DeleteMenuIcon = () => (
+  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.9' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+    <path d='M3 6h18'></path>
+    <path d='M8 6V4h8v2'></path>
+    <path d='M6 6l1 14h10l1-14'></path>
+    <path d='M10 11v6'></path>
+    <path d='M14 11v6'></path>
   </svg>
 );
 
@@ -132,6 +151,7 @@ const Gems = () => {
   const [showUnlockPassword, setShowUnlockPassword] = useState(false);
   const [featureUpdatingById, setFeatureUpdatingById] = useState({});
   const [openActionsBotId, setOpenActionsBotId] = useState('');
+  const [actionsMenuPosition, setActionsMenuPosition] = useState({ top: 0, right: 0 });
   const [deletingBotId, setDeletingBotId] = useState('');
 
   const createdGemId = searchParams.get('created') || '';
@@ -187,7 +207,7 @@ const Gems = () => {
   useEffect(() => {
     const handleDocumentClick = (event) => {
       const target = event.target;
-      if (target instanceof Element && target.closest('.gem-actions-menu-wrap')) {
+      if (target instanceof Element && (target.closest('.gem-actions-menu-wrap') || target.closest('.gem-actions-menu'))) {
         return;
       }
 
@@ -199,6 +219,24 @@ const Gems = () => {
       document.removeEventListener('mousedown', handleDocumentClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (!openActionsBotId) {
+      return undefined;
+    }
+
+    const handleWindowScroll = () => {
+      setOpenActionsBotId('');
+    };
+
+    window.addEventListener('scroll', handleWindowScroll, true);
+    window.addEventListener('resize', handleWindowScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleWindowScroll, true);
+      window.removeEventListener('resize', handleWindowScroll);
+    };
+  }, [openActionsBotId]);
 
   const visiblePublicBots = useMemo(() => {
     const all = Array.isArray(publicBots) ? publicBots : [];
@@ -393,6 +431,20 @@ const Gems = () => {
     }
   };
 
+  const openActionsMenu = (botId, triggerElement) => {
+    if (!triggerElement) {
+      return;
+    }
+
+    const rect = triggerElement.getBoundingClientRect();
+    setActionsMenuPosition({
+      top: Math.round(rect.bottom + 8),
+      right: Math.round(window.innerWidth - rect.right)
+    });
+
+    setOpenActionsBotId((prev) => (prev === botId ? '' : botId));
+  };
+
   return (
     <main className='page page-home'>
       <section className='chat-shell'>
@@ -523,9 +575,6 @@ const Gems = () => {
                 {publicMyBots.map((bot, index) => {
                   const botId = String(bot.id || bot._id || '');
                   const isJustCreated = Boolean(createdGemId) && botId === String(createdGemId);
-                  const isFeaturedUploaded = bot?.featuredInPublic === true;
-                  const isFeatureUpdating = featureUpdatingById[botId] === true;
-                  const isDeletingThisGem = deletingBotId === botId;
 
                   return (
                     <article
@@ -579,38 +628,13 @@ const Gems = () => {
                             type='button'
                             className='icon-btn'
                             aria-label='More gem actions'
-                            onClick={() => {
-                              setOpenActionsBotId((prev) => (prev === botId ? '' : botId));
+                            aria-expanded={openActionsBotId === botId}
+                            onClick={(event) => {
+                              openActionsMenu(botId, event.currentTarget);
                             }}
                           >
                             <MoreIcon />
                           </button>
-
-                          {openActionsBotId === botId ? (
-                            <div className='gem-actions-menu' role='menu' aria-label='Gem actions menu'>
-                              <button
-                                type='button'
-                                className='gem-actions-menu-item'
-                                disabled={isFeatureUpdating || isDeletingThisGem}
-                                onClick={() => {
-                                  handleToggleFeaturedUpload(bot);
-                                  setOpenActionsBotId('');
-                                }}
-                              >
-                                {isFeaturedUploaded ? 'Remove from Featured Gems' : 'Upload to Featured Gems'}
-                              </button>
-                              <button
-                                type='button'
-                                className='gem-actions-menu-item danger'
-                                disabled={isDeletingThisGem || isFeatureUpdating}
-                                onClick={() => {
-                                  handleDeleteGem(bot);
-                                }}
-                              >
-                                {isDeletingThisGem ? 'Deleting...' : 'Delete Gem'}
-                              </button>
-                            </div>
-                          ) : null}
                         </div>
                       </div>
                     </article>
@@ -619,6 +643,65 @@ const Gems = () => {
 
                 {!isLoading && publicMyBots.length === 0 && <p className='gems-empty'>No public gems in your account yet.</p>}
               </div>
+
+              {openActionsBotId
+                ? createPortal(
+                    (() => {
+                      const selectedBot = publicMyBots.find((item) => {
+                        const id = String(item?.id || item?._id || '');
+                        return id === openActionsBotId;
+                      });
+
+                      if (!selectedBot) {
+                        return null;
+                      }
+
+                      const selectedBotId = String(selectedBot.id || selectedBot._id || '');
+                      const selectedIsFeaturedUploaded = selectedBot?.featuredInPublic === true;
+                      const selectedIsFeatureUpdating = featureUpdatingById[selectedBotId] === true;
+                      const selectedIsDeleting = deletingBotId === selectedBotId;
+
+                      return (
+                        <div
+                          className='gem-actions-menu'
+                          style={{ top: `${actionsMenuPosition.top}px`, right: `${actionsMenuPosition.right}px` }}
+                          role='menu'
+                          aria-label='Gem actions menu'
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <button
+                            type='button'
+                            className='gem-actions-menu-item'
+                            disabled={selectedIsFeatureUpdating || selectedIsDeleting}
+                            onClick={() => {
+                              handleToggleFeaturedUpload(selectedBot);
+                              setOpenActionsBotId('');
+                            }}
+                          >
+                            <span className='gem-actions-menu-item-content'>
+                              <UploadMenuIcon />
+                              <span>{selectedIsFeaturedUploaded ? 'Remove from Featured Gems' : 'Upload to Featured Gems'}</span>
+                            </span>
+                          </button>
+                          <button
+                            type='button'
+                            className='gem-actions-menu-item danger'
+                            disabled={selectedIsDeleting || selectedIsFeatureUpdating}
+                            onClick={() => {
+                              handleDeleteGem(selectedBot);
+                            }}
+                          >
+                            <span className='gem-actions-menu-item-content'>
+                              <DeleteMenuIcon />
+                              <span>{selectedIsDeleting ? 'Deleting...' : 'Delete Gem'}</span>
+                            </span>
+                          </button>
+                        </div>
+                      );
+                    })(),
+                    document.body
+                  )
+                : null}
             </section>
 
             <section className='gems-section'>
