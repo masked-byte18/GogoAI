@@ -1,0 +1,31 @@
+:root,
+:root[data-theme='dark'] {
+  --font-display: 'Sora', 'Space Grotesk', sans-serif;
+  --font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Matte Tech Dark Theme */
+  --bg-base: #09090b;
+  --bg-grid: #27272a;
+  --bg-layer-1: none;
+  --bg-layer-2: none;
+  --bg-layer-3: none;
+  --bg-main: var(--bg-base);
+
+  --surface-base: #111113;
+  --surface-hover: #18181b;
+  --border-subtle: #27272a;
+  --border-hover: #52525b;
+  
+  --text-main: #fafafa;
+  --text-sub: #a1a1aa;
+  --text-dim: #52525b;
+  --text-inverse: #09090b;
+
+  --accent: #fafafa;
+  --accent-hover: #d4d4d8;
+  
+  --input-bg: #09090b;
+  
+  --shadow-main: rgba(0, 0, 0, 0.8);
+}

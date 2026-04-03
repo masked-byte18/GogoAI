@@ -1,0 +1,30 @@
+:root[data-theme='light'] {
+  --font-display: 'Sora', 'Space Grotesk', sans-serif;
+  --font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Matte Tech Light Theme */
+  --bg-base: #dbe2ea;
+  --bg-grid: #b3becc;
+  --bg-layer-1: none;
+  --bg-layer-2: none;
+  --bg-layer-3: none;
+  --bg-main: var(--bg-base);
+
+  --surface-base: #e2e9f1;
+  --surface-hover: #d5deea;
+  --border-subtle: #adb9ca;
+  --border-hover: #74839a;
+
+  --text-main: #141923;
+  --text-sub: #384658;
+  --text-dim: #66778e;
+  --text-inverse: #dbe2ea;
+
+  --accent: #111827;
+  --accent-hover: #1f2937;
+
+  --input-bg: #dce4ee;
+
+  --shadow-main: rgba(15, 23, 42, 0.09);
+}

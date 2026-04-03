@@ -1,0 +1,617 @@
+.gem-editor-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gem-editor-mobile-header {
+  display: none;
+}
+
+.gem-editor-shell {
+  flex: 1;
+  overflow: hidden;
+  padding: 1.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gem-editor-top {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.gem-back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.gem-back-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.gem-head-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.gem-head-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gem-head-kicker {
+  margin: 0 0 0.12rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-sub);
+}
+
+.gem-head-meta h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.gem-save-btn {
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  height: 38px;
+  padding: 0 1.1rem;
+  background: color-mix(in srgb, var(--surface-base) 86%, transparent);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.gem-save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.gem-editor-tabs {
+  border-bottom: 1px solid var(--border-subtle);
+  display: none;
+}
+
+.gem-tab {
+  width: 50%;
+  height: 42px;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.gem-tab.active {
+  color: var(--text-main);
+  border-bottom: 2px solid color-mix(in srgb, var(--text-main) 70%, transparent);
+}
+
+.gem-global-error {
+  margin: 0;
+  color: color-mix(in srgb, #ef4444 75%, var(--text-main));
+  font-size: 0.9rem;
+}
+
+.gem-editor-panels {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.82rem;
+}
+
+.gem-panel {
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-base) 95%, transparent) 0%, color-mix(in srgb, var(--bg-base) 92%, transparent) 100%);
+  min-height: 0;
+  overflow: auto;
+  padding: 1.5rem 1.75rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-sub) 38%, transparent) transparent;
+}
+
+.gem-panel::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.gem-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gem-panel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-sub) 36%, transparent);
+  border-radius: 999px;
+}
+
+.gem-panel::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-main) 42%, transparent);
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gem-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.48rem;
+}
+
+.editor-panel > .gem-field + .gem-field,
+.editor-panel > .gem-field + .gem-field-grid,
+.editor-panel > .gem-field + .gem-private-setup-hint,
+.editor-panel > .gem-field + .gem-private-setup-ready,
+.editor-panel > .gem-field-grid + .gem-private-setup-hint,
+.editor-panel > .gem-field-grid + .gem-private-setup-ready,
+.editor-panel > .gem-private-setup-hint + .gem-field,
+.editor-panel > .gem-private-setup-ready + .gem-field {
+  margin-top: 0.22rem;
+}
+
+.gem-field > span {
+  color: var(--text-main);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.field-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.field-inline svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-sub);
+}
+
+.gem-field input,
+.gem-field textarea,
+.gem-field select {
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-base) 94%, transparent);
+  color: var(--text-main);
+  padding: 0.6rem 0.74rem;
+  font-size: 0.89rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.gem-field textarea {
+  resize: vertical;
+}
+
+.gem-field input:focus,
+.gem-field textarea:focus,
+.gem-field select:focus {
+  border-color: var(--border-hover);
+}
+
+.gem-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.92rem;
+}
+
+.gem-avatar-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.gem-avatar-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 88%, transparent);
+  box-shadow: 0 0 0 2px transparent;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.gem-avatar-swatch:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-hover);
+}
+
+.gem-avatar-swatch.selected {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--text-main) 50%, transparent);
+  border-color: color-mix(in srgb, var(--text-main) 35%, transparent);
+}
+
+.gem-file-input-wrap {
+  border: 1px solid var(--border-subtle);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--bg-base) 94%, transparent);
+  padding: 0.58rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 46px;
+}
+
+.gem-file-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-base) 92%, transparent);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 30px;
+  padding: 0 0.64rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.gem-file-trigger input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.gem-file-meta {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.field-error {
+  color: color-mix(in srgb, #ef4444 72%, var(--text-main));
+  font-style: normal;
+  font-size: 0.78rem;
+}
+
+.gem-private-setup-hint,
+.gem-private-setup-ready {
+  margin: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-base) 90%, transparent);
+  color: var(--text-sub);
+  font-size: 0.82rem;
+  padding: 0.72rem 0.78rem;
+}
+
+.gem-private-setup-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.gem-private-setup-hint p {
+  margin: 0;
+}
+
+.gem-private-setup-hint button {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  min-height: 30px;
+  padding: 0 0.62rem;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gem-private-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, #000 35%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 260;
+}
+
+.gem-private-modal {
+  width: min(94vw, 420px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-base);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.gem-private-modal h3 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1.02rem;
+}
+
+.gem-private-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.gem-private-modal label span {
+  color: var(--text-sub);
+  font-size: 0.8rem;
+}
+
+.gem-private-modal input {
+  height: 37px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-base) 94%, transparent);
+  color: var(--text-main);
+  padding: 0 0.7rem;
+  outline: none;
+}
+
+.gem-modal-password-input-wrap {
+  position: relative;
+}
+
+.gem-modal-password-input-wrap input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.gem-modal-password-visibility-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.gem-modal-password-visibility-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.gem-modal-password-visibility-btn:hover {
+  color: var(--text-main);
+}
+
+.gem-private-modal-error {
+  margin: 0;
+  color: color-mix(in srgb, #ef4444 74%, var(--text-main));
+  font-size: 0.8rem;
+}
+
+.gem-private-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.gem-private-modal-actions button {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  min-height: 33px;
+  padding: 0 0.72rem;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+}
+
+.preview-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-base) 92%, transparent);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.preview-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  margin: 0 auto 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.preview-card h3 {
+  margin: 0 0 0.38rem;
+  color: var(--text-main);
+  font-size: 1.5rem;
+}
+
+.preview-card p {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.preview-chat-log {
+  flex: 1;
+  min-height: 160px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-base) 94%, transparent);
+  padding: 1.2rem;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.48rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-sub) 38%, transparent) transparent;
+}
+
+.preview-chat-log::-webkit-scrollbar {
+  width: 8px;
+}
+
+.preview-chat-log::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.preview-chat-log::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-sub) 36%, transparent);
+  border-radius: 999px;
+}
+
+.preview-empty {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 0.82rem;
+}
+
+.preview-msg {
+  border-radius: 10px;
+  padding: 0.5rem 0.64rem;
+  max-width: 86%;
+  line-height: 1.4;
+  font-size: 0.86rem;
+}
+
+.preview-msg.user {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--text-main) 18%, transparent);
+  color: var(--text-main);
+}
+
+.preview-msg.ai {
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--surface-base) 88%, transparent);
+  color: var(--text-main);
+}
+
+.preview-chat-input-wrap {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.preview-chat-input-wrap input {
+  flex: 1;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-base) 94%, transparent);
+  color: var(--text-main);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.87rem;
+  outline: none;
+}
+
+.preview-chat-input-wrap button {
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-main) 20%, transparent);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0 0.9rem;
+  cursor: pointer;
+}
+
+.preview-chat-error {
+  margin: 0;
+  color: color-mix(in srgb, #ef4444 74%, var(--text-main));
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+  .gem-editor-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-panel,
+  .editor-panel {
+    display: none;
+  }
+
+  .preview-panel.active,
+  .editor-panel.active {
+    display: flex;
+  }
+
+  .gem-editor-tabs {
+    display: flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .gem-editor-mobile-header {
+    display: block;
+  }
+
+  .gem-editor-shell {
+    padding: 0.82rem;
+  }
+
+  .gem-head-meta h1 {
+    font-size: 1.08rem;
+  }
+
+  .gem-head-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .gem-save-btn {
+    width: 100%;
+    grid-column: 1 / -1;
+    height: 36px;
+  }
+
+  .gem-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
