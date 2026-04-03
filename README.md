@@ -2,6 +2,10 @@
 
 A modern full stack AI chat platform with custom Gems, real time messaging, secure authentication, and knowledge powered responses.
 
+## Live Deployment
+
+- App and API: https://gogoai-7lzb.onrender.com/
+
 ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-0ea5e9?style=for-the-badge)
 ![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-16a34a?style=for-the-badge)
 ![Database](https://img.shields.io/badge/Database-MongoDB-10b981?style=for-the-badge)
@@ -57,10 +61,18 @@ flowchart LR
 - Create and edit custom AI Gems
 - Public and private Gem visibility
 - Private Gem access verification flow
+- Per Gem Featured visibility control for public listing
+- Gems Manager 3 dots actions for Featured toggle and Delete
 - Avatar upload plus avatar background palette
 - Knowledge files support for PDF, TXT, DOC, DOCX
 
-4. Real Time Layer
+4. UX and Reliability Enhancements
+- AI token limit warning appears only when quota is actually hit
+- Action menus render above scroll containers for better usability
+- Improved auth screen stability during login and register interactions
+- Deleting a Gem removes related chats, messages, and vector memory
+
+5. Real Time Layer
 - Socket server initialization with backend HTTP server
 - Live chat style experience across sessions
 
@@ -209,8 +221,13 @@ cd Frontend
 npm run dev
 ```
 
-- Backend runs on https://gogoai-7lzb.onrender.com
-- Frontend runs on http://localhost:5173
+- Production app and API run on https://gogoai-7lzb.onrender.com/
+- Local development runs on your local Vite and Express ports as configured
+
+## Deployment
+
+- Live URL: https://gogoai-7lzb.onrender.com/
+- Use this URL for app access and API base in production
 
 ## API Overview
 
@@ -237,6 +254,7 @@ npm run dev
 - GET /api/bots/public
 - GET /api/bots/:id
 - PATCH /api/bots/:id
+- PATCH /api/bots/:id/featured
 - DELETE /api/bots/:id
 - Plus private access and password management endpoints
 
