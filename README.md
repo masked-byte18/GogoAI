@@ -2,15 +2,14 @@
 
 A modern full stack AI chat platform with custom Gems, real time messaging, secure authentication, and knowledge powered responses.
 
-## Live Deployment
+## Local Development
 
-> Production is live on Render.
+> For open source setup, run the project locally.
 >
-> **Primary URL:** https://gogoai-7lzb.onrender.com/
+> **Backend base URL for frontend files:** http://localhost:3000
 
-[![Live App](https://img.shields.io/badge/Launch-GogoAI%20Live-16a34a?style=for-the-badge&logo=render&logoColor=white)](https://gogoai-7lzb.onrender.com/)
-[![API Base](https://img.shields.io/badge/API-Production%20Base-0ea5e9?style=for-the-badge&logo=fastapi&logoColor=white)](https://gogoai-7lzb.onrender.com/api)
-[![Health](https://img.shields.io/badge/Status-Online-22c55e?style=for-the-badge)](https://gogoai-7lzb.onrender.com/)
+[![Run Local](https://img.shields.io/badge/Run-Local%20Setup-16a34a?style=for-the-badge&logo=github&logoColor=white)](http://localhost:3000)
+[![Backend URL](https://img.shields.io/badge/Backend-http%3A%2F%2Flocalhost%3A3000-0ea5e9?style=for-the-badge)](http://localhost:3000)
 
 ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-0ea5e9?style=for-the-badge)
 ![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-16a34a?style=for-the-badge)
@@ -193,6 +192,10 @@ flowchart TD
 
 ### 1. Clone and install
 
+Before installing dependencies, download and review these files to match the same environment setup:
+- Backend/req.txt
+- Frontend/req.txt
+
 ```bash
 cd Backend
 npm install
@@ -217,9 +220,15 @@ Optional for local development:
 
 ### 3. Run both apps
 
+Before running, replace any deployed backend URL in frontend service files with:
+- http://localhost:3000
+
 ```bash
 # terminal 1
 cd Backend
+npx nodemon server.js
+
+# or
 npm run dev
 
 # terminal 2
@@ -227,16 +236,18 @@ cd Frontend
 npm run dev
 ```
 
-- Production app and API run on https://gogoai-7lzb.onrender.com/
-- Local development runs on your local Vite and Express ports as configured
+- Frontend: npm run dev
+- Backend: npx nodemon server.js or npm run dev
+- Use localhost:3000 as backend API base in frontend files
 
-## Deployment
+## Runtime URL
 
 | Environment | URL | Purpose |
 |---|---|---|
-| Production App | https://gogoai-7lzb.onrender.com/ | Main user-facing application |
+| Local Frontend App | http://localhost:5173 | Default Vite frontend URL for local development |
+| Local Backend API | http://localhost:3000 | Backend API base for local development |
 
-Use the production app URL for real usage and sharing.
+`5173` is the default Vite frontend port and `3000` is the backend API port. If you change ports in config, use your configured values.
 
 ## API Overview
 
