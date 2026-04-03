@@ -3,6 +3,7 @@ import { Link,useNavigate } from "react-router-dom";
 import "./Auth.css";
 import { checkRegistrationEmailRequest, registerRequest } from '../services/authApi';
 import GoogleSignInButton from '../components/auth/GoogleSignInButton';
+import { setAuthSessionHint } from '../services/authSession';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -88,6 +89,7 @@ const Register = () => {
         password: formData.password
       });
     }).then(() => {
+      setAuthSessionHint(true);
       navigate("/");
     }).catch ((err) =>{
       const message = String(err?.response?.data?.message || '');
@@ -198,6 +200,7 @@ const Register = () => {
 
           <GoogleSignInButton
             onSuccess={() => {
+              setAuthSessionHint(true);
               navigate('/');
             }}
             onError={(message) => {

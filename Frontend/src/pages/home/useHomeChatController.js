@@ -24,6 +24,7 @@ import {
 import { bootstrapAuthenticatedSession, logoutFlow } from './controller/sessionHandlers';
 import { cancelGuestResponseRequest } from '../../services/chatApi';
 import { fetchMyBotsRequest, fetchPrivateAccessSettingsRequest, verifyPrivateAccessRequest } from '../../services/botApi';
+import { hasAuthSessionHint } from '../../services/authSession';
 
 const DRAFT_CHAT_INPUT_KEY = 'draft-chat';
 const CHAT_INPUT_DRAFTS_STORAGE_KEY = 'chat-input-drafts-v1';
@@ -458,6 +459,12 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   };
 
   useEffect(() => {
+    if (!hasAuthSessionHint()) {
+      setIsAuthenticated(false);
+      setSocket(null);
+      return undefined;
+    }
+
     const isDisposedRef = { current: false };
     let tempSocket = null;
 

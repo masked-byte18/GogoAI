@@ -3,6 +3,7 @@ import { Link,useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { requestLoginOtpRequest, verifyLoginOtpRequest } from '../services/authApi';
 import GoogleSignInButton from '../components/auth/GoogleSignInButton';
+import { setAuthSessionHint } from '../services/authSession';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -86,6 +87,7 @@ const Login = () => {
         attemptToken,
         otp
       }).then(() => {
+        setAuthSessionHint(true);
         navigate('/');
       }).catch((err) => {
         const message = String(err?.response?.data?.message || 'Unable to verify OTP.');
@@ -234,6 +236,7 @@ const Login = () => {
           {!isOtpStep ? (
             <GoogleSignInButton
               onSuccess={() => {
+                setAuthSessionHint(true);
                 navigate('/');
               }}
               onError={(message) => {

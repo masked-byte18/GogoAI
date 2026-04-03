@@ -1,4 +1,5 @@
 import './ChatHeader.css';
+import logoAsset from '../../assets/logo.png';
 
 const ChatHeader = ({ activeChatTitle, toggleSidebar }) => {
   return (
@@ -11,8 +12,11 @@ const ChatHeader = ({ activeChatTitle, toggleSidebar }) => {
             <line x1='3' y1='18' x2='21' y2='18'></line>
           </svg>
         </button>
+        <span className='chat-header-logo-wrap'>
+          <img src={logoAsset} alt='GogoAI logo' className='chat-header-logo' />
+        </span>
         <div>
-          <p className='chat-header-kicker'>AI Assistant</p>
+          <p className='chat-header-kicker'>GogoAI</p>
           <h1>{activeChatTitle}</h1>
         </div>
       </div>

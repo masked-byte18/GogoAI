@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client';
 import { logoutRequest } from '../../../services/authApi';
+import { setAuthSessionHint } from '../../../services/authSession';
 import {
   fetchChatMessagesRequest,
   fetchChatsRequest,
@@ -185,6 +186,7 @@ export const logoutFlow = async ({
   }
 
   setIsAuthenticated(false);
+  setAuthSessionHint(false);
   dispatch(setChats([]));
   setIsDraftChatActive(true);
   setDraftMessages([]);
