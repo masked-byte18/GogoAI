@@ -4,6 +4,9 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Gems from './pages/Gems';
 import GemEditor from './pages/GemEditor';
+import ProtectedAuthRoute from './components/ProtectedAuthRoute';
+import AccessRequired from './pages/AccessRequired';
+import NotFound from './pages/NotFound';
 
 
 const AppRoutes = () => {
@@ -14,9 +17,11 @@ const AppRoutes = () => {
         <Route path='/chats/:chatId' element={<Home />} />
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/gems' element={<Gems />} />
-        <Route path='/gems/new' element={<GemEditor />} />
-        <Route path='/gems/:gemId/edit' element={<GemEditor />} />
+        <Route path='/access-required' element={<AccessRequired />} />
+        <Route path='/gems' element={<ProtectedAuthRoute><Gems /></ProtectedAuthRoute>} />
+        <Route path='/gems/new' element={<ProtectedAuthRoute><GemEditor /></ProtectedAuthRoute>} />
+        <Route path='/gems/:gemId/edit' element={<ProtectedAuthRoute><GemEditor /></ProtectedAuthRoute>} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
