@@ -31,15 +31,25 @@ const loadGoogleScript = () =>
 
 const GoogleSignInButton = ({ onSuccess, onError }) => {
   const buttonRef = useRef(null);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
   const [ready, setReady] = useState(false);
   const clientId = String(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   useEffect(() => {
     let cancelled = false;
 
     const initialize = async () => {
       if (!clientId) {
-        onError?.('Google sign-in is not configured. Set VITE_GOOGLE_CLIENT_ID in frontend .env.');
+        onErrorRef.current?.('Google sign-in is not configured. Set VITE_GOOGLE_CLIENT_ID in frontend .env.');
         return;
       }
 
@@ -60,11 +70,11 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
               }
 
               const signinResponse = await googleSigninRequest(idToken);
-              onSuccess?.(signinResponse);
+              onSuccessRef.current?.(signinResponse);
             } catch (error) {
               const message =
                 error?.response?.data?.message || error?.message || 'Google sign-in failed. Please try again.';
-              onError?.(message);
+              onErrorRef.current?.(message);
             }
           }
         });
@@ -81,7 +91,7 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
         setReady(true);
       } catch {
         if (!cancelled) {
-          onError?.('Could not load Google sign-in right now.');
+          onErrorRef.current?.('Could not load Google sign-in right now.');
         }
       }
     };
@@ -91,7 +101,7 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
     return () => {
       cancelled = true;
     };
-  }, [clientId, onError, onSuccess]);
+  }, [clientId]);
 
   return (
     <div className='google-auth-wrap'>

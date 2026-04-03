@@ -66,6 +66,7 @@ const sanitizeBot = (botDoc) => {
 	const raw = botDoc.toObject ? botDoc.toObject({ virtuals: true }) : botDoc;
 	const bot = { ...raw };
 	delete bot.nameKey;
+	bot.visibility = normalizeText(bot.visibility).toLowerCase() || 'private';
 
 	const fallbackIndex = String(bot.name || '').trim().charCodeAt(0) % DEFAULT_AVATAR_GRADIENTS.length;
 	bot.avatarBackground =

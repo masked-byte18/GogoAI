@@ -59,6 +59,7 @@ const pickAvatarColor = (index) => {
 };
 
 const toInitial = (name) => String(name || '').trim().charAt(0).toUpperCase() || 'G';
+const normalizeVisibility = (value) => String(value || '').trim().toLowerCase();
 
 const EyeIcon = ({ isOpen }) => (
   <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
@@ -185,13 +186,13 @@ const Gems = () => {
 
   const publicMyBots = useMemo(() => {
     return (Array.isArray(myBots) ? myBots : []).filter(
-      (bot) => String(bot?.visibility || '').toLowerCase() !== 'private'
+      (bot) => normalizeVisibility(bot?.visibility) !== 'private'
     );
   }, [myBots]);
 
   const privateMyBots = useMemo(() => {
     return (Array.isArray(myBots) ? myBots : []).filter(
-      (bot) => String(bot?.visibility || '').toLowerCase() === 'private'
+      (bot) => normalizeVisibility(bot?.visibility) === 'private'
     );
   }, [myBots]);
 
@@ -490,8 +491,71 @@ const Gems = () => {
                 ) : null}
               </div>
 
-              {!hasGlobalPrivatePassword ? (
+              {!hasGlobalPrivatePassword && privateMyBots.length === 0 ? (
                 <p className='gems-empty'>Set a global private gems password to use private gems.</p>
+              ) : !hasGlobalPrivatePassword ? (
+                <>
+                  <p className='gems-empty'>
+                    Private password is not set yet. Showing existing private gems for your account.
+                  </p>
+                  <div className='my-gems-list' role='list'>
+                    {privateMyBots.map((bot, index) => {
+                      const botId = String(bot.id || bot._id || '');
+                      const isJustCreated = Boolean(createdGemId) && botId === String(createdGemId);
+
+                      return (
+                        <article
+                          key={botId}
+                          className={`my-gem-row ${isJustCreated ? 'newly-created' : ''}`}
+                          role='listitem'
+                          onClick={() => handleStartChatWithBot(bot)}
+                        >
+                          <div className='my-gem-main'>
+                            <span
+                              className='my-gem-avatar'
+                              style={{
+                                background: bot.avatarBackground || pickAvatarColor(index)
+                              }}
+                            >
+                              {bot.avatarUrl ? (
+                                <img src={bot.avatarUrl} alt={bot.name || 'Gem avatar'} />
+                              ) : (
+                                toInitial(bot.name)
+                              )}
+                            </span>
+
+                            <div className='my-gem-copy'>
+                              <h3>{bot.name || 'Untitled Gem'}</h3>
+                              <p>{bot.description || 'No description yet.'}</p>
+                            </div>
+                          </div>
+
+                          <div className='my-gem-actions'>
+                            <button
+                              type='button'
+                              className='icon-btn'
+                              aria-label='Share gem'
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              <ShareIcon />
+                            </button>
+                            <button
+                              type='button'
+                              className='icon-btn'
+                              aria-label='Edit gem'
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                navigate(`/gems/${encodeURIComponent(botId)}/edit`);
+                              }}
+                            >
+                              <EditIcon />
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </>
               ) : !isPrivateGemsUnlockedInManager ? (
                 <p className='gems-empty'>Private gems are hidden until you unlock them.</p>
               ) : (

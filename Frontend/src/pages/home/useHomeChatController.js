@@ -60,6 +60,8 @@ const resolveInputContextKey = ({ isDraftChatActive, currentChatId }) => {
   return `chat:${String(currentChatId)}`;
 };
 
+const normalizeVisibility = (value) => String(value || '').trim().toLowerCase();
+
 export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -225,7 +227,7 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
     }
 
     return (Array.isArray(availableBots) ? availableBots : [])
-      .filter((bot) => String(bot?.visibility || '').toLowerCase() === 'private')
+      .filter((bot) => normalizeVisibility(bot?.visibility) === 'private')
       .map((bot) => ({
         id: String(bot?.id ?? bot?._id ?? ''),
         name: String(bot?.name || '').trim() || 'Untitled Gem',
