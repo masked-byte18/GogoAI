@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { requestLoginOtpRequest, verifyLoginOtpRequest } from '../services/authApi';
@@ -33,10 +33,29 @@ const Login = () => {
 
   const handleChange = (e) => {
     const {name,value} = e.target;
-    setFormData({...formData,[name]: value});
-    setFieldErrors((prev) => ({ ...prev, [name]: false }));
-    setAuthError('');
-    setAuthInfo('');
+    setFormData((prev) => {
+      if (prev[name] === value) {
+        return prev;
+      }
+
+      return { ...prev, [name]: value };
+    });
+
+    setFieldErrors((prev) => {
+      if (!prev[name]) {
+        return prev;
+      }
+
+      return { ...prev, [name]: false };
+    });
+
+    if (authError) {
+      setAuthError('');
+    }
+
+    if (authInfo) {
+      setAuthInfo('');
+    }
 
     if (isOtpStep) {
       setAttemptToken('');
@@ -47,10 +66,27 @@ const Login = () => {
 
   const handleOtpChange = (e) => {
     const nextOtp = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setOtp(nextOtp);
-    setAuthError('');
-    setAuthInfo('');
+    if (nextOtp !== otp) {
+      setOtp(nextOtp);
+    }
+
+    if (authError) {
+      setAuthError('');
+    }
+
+    if (authInfo) {
+      setAuthInfo('');
+    }
   };
+
+  const handleGoogleSuccess = useCallback(() => {
+    setAuthSessionHint(true);
+    navigate('/');
+  }, [navigate]);
+
+  const handleGoogleError = useCallback((message) => {
+    setAuthError(message);
+  }, []);
 
   const requestOtp = async (trimmedEmail) => {
     const response = await requestLoginOtpRequest({
@@ -235,13 +271,8 @@ const Login = () => {
 
           {!isOtpStep ? (
             <GoogleSignInButton
-              onSuccess={() => {
-                setAuthSessionHint(true);
-                navigate('/');
-              }}
-              onError={(message) => {
-                setAuthError(message);
-              }}
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
             />
           ) : null}
         </form>

@@ -3,8 +3,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.2rem 0.95rem;
-  background: color-mix(in srgb, var(--surface-base) 96%, transparent);
-  border-bottom: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(circle at 82% -40%, color-mix(in srgb, #f4c64f 28%, transparent) 0%, transparent 62%),
+    linear-gradient(180deg, #0b0b0b 0%, #101010 100%);
+  border-bottom: 1px solid color-mix(in srgb, #f4c64f 45%, #1f1f1f);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, #f4c64f 24%, transparent);
   gap: 0.75rem;
 }
 
@@ -16,22 +19,23 @@
 }
 
 .chat-header-logo-wrap {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-base);
+  border: 1px solid color-mix(in srgb, #f4c64f 62%, #2b2b2b);
+  background: #000;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 0 18px color-mix(in srgb, #f4c64f 33%, transparent);
 }
 
 .chat-header-logo {
-  width: 130%;
-  height: 130%;
-  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 
@@ -42,20 +46,21 @@
 }
 
 .hamburger-btn {
-  background: none;
-  border: 1px solid var(--border-subtle);
-  color: var(--text-main);
+  background: color-mix(in srgb, #151515 92%, transparent);
+  border: 1px solid color-mix(in srgb, #f4c64f 45%, #2f2f2f);
+  color: #ffe189;
   cursor: pointer;
   padding: 0.45rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .hamburger-btn:hover {
-  background: var(--surface-hover);
+  background: color-mix(in srgb, #212121 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #f4c64f 35%, transparent);
 }
 
 .hamburger-btn svg {
@@ -67,7 +72,7 @@
   font-size: 0.74rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--text-sub);
+  color: #d4aa3a;
   margin-bottom: 0.1rem;
 }
 
@@ -75,7 +80,7 @@
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0;
-  color: var(--text-main);
+  color: #f8f4e7;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -84,10 +89,10 @@
 .status-chip {
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid color-mix(in srgb, #f4c64f 45%, #343434);
   font-size: 0.74rem;
-  color: var(--text-sub);
-  background: var(--surface-base);
+  color: #f5cb58;
+  background: color-mix(in srgb, #121212 90%, transparent);
 }
 
 @media (min-width: 768px) {

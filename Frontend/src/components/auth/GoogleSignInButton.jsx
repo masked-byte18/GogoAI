@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { googleSigninRequest } from '../../services/authApi';
 
 const GOOGLE_SCRIPT_ID = 'google-identity-script';
@@ -114,4 +114,6 @@ const GoogleSignInButton = ({ onSuccess, onError }) => {
   );
 };
 
-export default GoogleSignInButton;
+GoogleSignInButton.displayName = 'GoogleSignInButton';
+
+export default memo(GoogleSignInButton);
