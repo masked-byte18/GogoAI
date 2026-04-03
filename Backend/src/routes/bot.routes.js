@@ -19,6 +19,7 @@ router.patch('/private-access/password', authMiddleware.authUser, botController.
 router.get('/avatar-backgrounds', authMiddleware.authUser, botController.getAvatarPalette);
 router.get('/mine', authMiddleware.authUser, botController.getMyBots);
 router.get('/public', authMiddleware.authUser, botController.getPublicBots);
+router.patch('/:id/featured', authMiddleware.authUser, botController.updateFeaturedInPublic);
 router.get('/:id', authMiddleware.authUser, botController.getBotById);
 router.post('/:id/access', authMiddleware.authUser, botController.verifyPrivateBotAccess);
 router.patch('/:id', authMiddleware.authUser, botUpload, botController.updateBot);

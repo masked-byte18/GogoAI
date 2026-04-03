@@ -80,6 +80,10 @@ const botSchema = new mongoose.Schema(
       type: String,
       enum: ['public', 'private'],
       default: 'private'
+    },
+    featuredInPublic: {
+      type: Boolean,
+      default: false
     }
   },
   {

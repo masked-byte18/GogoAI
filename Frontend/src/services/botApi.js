@@ -88,6 +88,20 @@ export const updatePrivateAccessPasswordRequest = async (payload) => {
   return response.data || null;
 };
 
+export const updateFeaturedInPublicRequest = async (botId, featuredInPublic) => {
+  const response = await axios.patch(
+    `${BOT_API_BASE}/${botId}/featured`,
+    {
+      featuredInPublic: Boolean(featuredInPublic)
+    },
+    {
+      withCredentials: true
+    }
+  );
+
+  return response.data?.bot || null;
+};
+
 const appendTruthy = (formData, key, value) => {
   if (value == null) {
     return;

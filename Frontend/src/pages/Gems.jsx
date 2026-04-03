@@ -7,6 +7,7 @@ import {
   fetchMyBotsRequest,
   fetchPrivateAccessSettingsRequest,
   fetchPublicBotsRequest,
+  updateFeaturedInPublicRequest,
   setupPrivateAccessRequest,
   updatePrivateAccessPasswordRequest
 } from '../services/botApi';
@@ -50,6 +51,15 @@ const EditIcon = () => (
   <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.9' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
     <path d='M12 20h9'></path>
     <path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z'></path>
+  </svg>
+);
+
+const UploadFeaturedIcon = ({ active }) => (
+  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.9' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+    <path d='M12 16V4'></path>
+    <path d='M8 8l4-4 4 4'></path>
+    <path d='M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4'></path>
+    {active ? <path d='M9 20h6'></path> : null}
   </svg>
 );
 
@@ -128,6 +138,7 @@ const Gems = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showUnlockPassword, setShowUnlockPassword] = useState(false);
+  const [featureUpdatingById, setFeatureUpdatingById] = useState({});
 
   const createdGemId = searchParams.get('created') || '';
 
@@ -274,6 +285,76 @@ const Gems = () => {
     setIsUnlockingPrivate(false);
   };
 
+  const handleToggleFeaturedUpload = async (bot) => {
+    const botId = String(bot?.id || bot?._id || '');
+    if (!botId) {
+      return;
+    }
+
+    if (featureUpdatingById[botId]) {
+      return;
+    }
+
+    const isPublic = normalizeVisibility(bot?.visibility) === 'public';
+    if (!isPublic) {
+      return;
+    }
+
+    const nextValue = !(bot?.featuredInPublic === true);
+    setFeatureUpdatingById((prev) => ({ ...prev, [botId]: true }));
+
+    setMyBots((prev) =>
+      (Array.isArray(prev) ? prev : []).map((item) => {
+        const itemId = String(item?.id || item?._id || '');
+        if (itemId !== botId) {
+          return item;
+        }
+
+        return {
+          ...item,
+          featuredInPublic: nextValue
+        };
+      })
+    );
+
+    try {
+      const updated = await updateFeaturedInPublicRequest(botId, nextValue);
+
+      setMyBots((prev) =>
+        (Array.isArray(prev) ? prev : []).map((item) => {
+          const itemId = String(item?.id || item?._id || '');
+          if (itemId !== botId) {
+            return item;
+          }
+
+          return {
+            ...item,
+            ...(updated || {}),
+            featuredInPublic: updated?.featuredInPublic === true
+          };
+        })
+      );
+    } catch (error) {
+      setMyBots((prev) =>
+        (Array.isArray(prev) ? prev : []).map((item) => {
+          const itemId = String(item?.id || item?._id || '');
+          if (itemId !== botId) {
+            return item;
+          }
+
+          return {
+            ...item,
+            featuredInPublic: bot?.featuredInPublic === true
+          };
+        })
+      );
+
+      setLoadError(error?.response?.data?.message || 'Unable to update featured gem setting.');
+    } finally {
+      setFeatureUpdatingById((prev) => ({ ...prev, [botId]: false }));
+    }
+  };
+
   return (
     <main className='page page-home'>
       <section className='chat-shell'>
@@ -404,6 +485,8 @@ const Gems = () => {
                 {publicMyBots.map((bot, index) => {
                   const botId = String(bot.id || bot._id || '');
                   const isJustCreated = Boolean(createdGemId) && botId === String(createdGemId);
+                  const isFeaturedUploaded = bot?.featuredInPublic === true;
+                  const isFeatureUpdating = featureUpdatingById[botId] === true;
 
                   return (
                     <article
@@ -433,6 +516,20 @@ const Gems = () => {
                       </div>
 
                       <div className='my-gem-actions'>
+                        <button
+                          type='button'
+                          className={`icon-btn feature-upload-btn ${isFeaturedUploaded ? 'active' : ''}`}
+                          aria-label={isFeaturedUploaded ? 'Remove from featured gems' : 'Upload as featured gem'}
+                          title='upload as a featured gem'
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleToggleFeaturedUpload(bot);
+                          }}
+                          disabled={isFeatureUpdating}
+                        >
+                          <UploadFeaturedIcon active={isFeaturedUploaded} />
+                          <span className='feature-upload-tooltip'>upload as a featured gem</span>
+                        </button>
                         <button
                           type='button'
                           className='icon-btn'

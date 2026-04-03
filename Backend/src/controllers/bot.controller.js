@@ -67,6 +67,7 @@ const sanitizeBot = (botDoc) => {
 	const bot = { ...raw };
 	delete bot.nameKey;
 	bot.visibility = normalizeText(bot.visibility).toLowerCase() || 'private';
+	bot.featuredInPublic = bot.featuredInPublic === true;
 
 	const fallbackIndex = String(bot.name || '').trim().charCodeAt(0) % DEFAULT_AVATAR_GRADIENTS.length;
 	bot.avatarBackground =
@@ -221,6 +222,7 @@ async function createBot(req, res) {
 		const instructions = normalizeText(req.body?.instructions);
 		const avatarBackground = normalizeText(req.body?.avatarBackground);
 		const visibility = normalizeText(req.body?.visibility || 'private').toLowerCase();
+		const featuredInPublic = resolveBoolean(req.body?.featuredInPublic, false);
 		const memoryEnabled = resolveBoolean(req.body?.memoryEnabled, true);
 
 		if (!name || !description || !instructions) {
@@ -272,7 +274,8 @@ async function createBot(req, res) {
 			avatarBackground,
 			knowledgeFiles,
 			memoryEnabled,
-			visibility
+			visibility,
+			featuredInPublic: visibility === 'public' ? featuredInPublic : false
 		});
 
 		return res.status(201).json({
@@ -307,6 +310,10 @@ async function updateBot(req, res) {
 			req.body?.visibility != null
 				? normalizeText(req.body.visibility).toLowerCase()
 				: bot.visibility;
+		const nextFeaturedInPublic =
+			req.body?.featuredInPublic != null
+				? resolveBoolean(req.body.featuredInPublic, bot.featuredInPublic)
+				: bot.featuredInPublic;
 
 		const wordLimitError = validateWordLimits({
 			name: nextName,
@@ -332,6 +339,7 @@ async function updateBot(req, res) {
 		bot.description = nextDescription;
 		bot.instructions = nextInstructions;
 		bot.visibility = nextVisibility;
+		bot.featuredInPublic = nextVisibility === 'public' ? nextFeaturedInPublic : false;
 		bot.memoryEnabled = resolveBoolean(req.body?.memoryEnabled, bot.memoryEnabled);
 
 		if (req.body?.avatarBackground != null) {
@@ -416,7 +424,10 @@ async function getMyBots(req, res) {
 
 async function getPublicBots(req, res) {
 	try {
-		const bots = await botModel.find({ visibility: 'public' }).sort({ updatedAt: -1 }).lean();
+		const bots = await botModel
+			.find({ visibility: 'public', featuredInPublic: true })
+			.sort({ updatedAt: -1 })
+			.lean();
 
 		return res.status(200).json({
 			message: 'Public bots retrieved successfully',
@@ -424,6 +435,33 @@ async function getPublicBots(req, res) {
 		});
 	} catch (error) {
 		return res.status(500).json({ message: error?.message || 'Failed to fetch public bots' });
+	}
+}
+
+async function updateFeaturedInPublic(req, res) {
+	try {
+		const botId = req.params.id;
+		const userId = req.user?._id;
+		const featuredInPublic = resolveBoolean(req.body?.featuredInPublic, false);
+
+		const bot = await botModel.findOne({ _id: botId, user: userId });
+		if (!bot) {
+			return res.status(404).json({ message: 'Bot not found' });
+		}
+
+		if (normalizeText(bot.visibility).toLowerCase() !== 'public') {
+			return res.status(400).json({ message: 'Only public gems can be added to Featured Gems' });
+		}
+
+		bot.featuredInPublic = featuredInPublic;
+		await bot.save();
+
+		return res.status(200).json({
+			message: featuredInPublic ? 'Gem uploaded to Featured Gems' : 'Gem removed from Featured Gems',
+			bot: sanitizeBot(bot)
+		});
+	} catch (error) {
+		return res.status(500).json({ message: error?.message || 'Failed to update featured gem status' });
 	}
 }
 
@@ -708,6 +746,7 @@ module.exports = {
 	deleteBot,
 	getMyBots,
 	getPublicBots,
+	updateFeaturedInPublic,
 	getBotById,
 	verifyPrivateBotAccess,
 	getPrivateAccessSettings,
