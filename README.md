@@ -4,7 +4,13 @@ A modern full stack AI chat platform with custom Gems, real time messaging, secu
 
 ## Live Deployment
 
-- App and API: https://gogoai-7lzb.onrender.com/
+> Production is live on Render.
+>
+> **Primary URL:** https://gogoai-7lzb.onrender.com/
+
+[![Live App](https://img.shields.io/badge/Launch-GogoAI%20Live-16a34a?style=for-the-badge&logo=render&logoColor=white)](https://gogoai-7lzb.onrender.com/)
+[![API Base](https://img.shields.io/badge/API-Production%20Base-0ea5e9?style=for-the-badge&logo=fastapi&logoColor=white)](https://gogoai-7lzb.onrender.com/api)
+[![Health](https://img.shields.io/badge/Status-Online-22c55e?style=for-the-badge)](https://gogoai-7lzb.onrender.com/)
 
 ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-0ea5e9?style=for-the-badge)
 ![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-16a34a?style=for-the-badge)
@@ -226,8 +232,11 @@ npm run dev
 
 ## Deployment
 
-- Live URL: https://gogoai-7lzb.onrender.com/
-- Use this URL for app access and API base in production
+| Environment | URL | Purpose |
+|---|---|---|
+| Production App | https://gogoai-7lzb.onrender.com/ | Main user-facing application |
+
+Use the production app URL for real usage and sharing.
 
 ## API Overview
 
