@@ -209,7 +209,7 @@ cd Frontend
 npm run dev
 ```
 
-- Backend runs on http://localhost:3000
+- Backend runs on https://gogoai-7lzb.onrender.com
 - Frontend runs on http://localhost:5173
 
 ## API Overview

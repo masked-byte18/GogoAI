@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const AUTH_API_BASE = 'http://localhost:3000/api/auth';
+const AUTH_API_BASE = 'https://gogoai-7lzb.onrender.com/api/auth';
 
 export const checkRegistrationEmailRequest = async (email) => {
   const response = await axios.post(

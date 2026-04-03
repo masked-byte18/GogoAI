@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const CHAT_API_BASE = 'http://localhost:3000/api/chat';
+const CHAT_API_BASE = 'https://gogoai-7lzb.onrender.com/api/chat';
 
 export const createChatRequest = async (title, botId = null) => {
   const response = await axios.post(

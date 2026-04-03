@@ -68,7 +68,7 @@ export const bootstrapAuthenticatedSession = async ({
       setDraftMessages([]);
     }
 
-    const tempSocket = io('http://localhost:3000', {
+    const tempSocket = io('https://gogoai-7lzb.onrender.com', {
       withCredentials: true
     });
 

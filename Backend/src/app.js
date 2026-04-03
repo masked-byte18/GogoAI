@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth.routes');
 const chatRoutes = require('./routes/chat.routes');
 const botRoutes = require('./routes/bot.routes');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
@@ -14,11 +15,17 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname,'../public')));
 
 
 /* Using routes */
 app.use('/api/auth',authRoutes)
 app.use('/api/chat',chatRoutes)
 app.use('/api/bots',botRoutes)
+
+app.get("*name",(req,res)=>
+{
+    res.sendFile(path.join(__dirname,'../public/index.html'));
+})
 
 module.exports = app;
