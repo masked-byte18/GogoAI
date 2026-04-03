@@ -657,13 +657,13 @@
   }
 
   .premade-grid {
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-x: hidden;
+    overflow-y: auto;
     max-height: none;
     gap: 0.82rem;
-    padding-bottom: 0.35rem;
-    scroll-snap-type: x mandatory;
+    padding-bottom: 0;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--text-sub) 38%, transparent) transparent;
   }
@@ -683,8 +683,9 @@
   }
 
   .premade-card {
-    min-width: 300px;
-    scroll-snap-align: start;
+    min-width: 0;
+    width: 100%;
+    min-height: 182px;
   }
 
   .my-gem-row {
