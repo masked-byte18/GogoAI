@@ -6,6 +6,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
+    googleId: {
+        type: String,
+        default: ''
+    },
     fullName: {
         firstName:{
             type: String,
@@ -18,7 +27,10 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type: String,
-        required:true
+        required: function requiredPassword() {
+            return this.authProvider !== 'google';
+        },
+        default: ''
     },
     privateGemsPasswordHash: {
         type: String,

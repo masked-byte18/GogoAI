@@ -46,6 +46,18 @@ export const verifyLoginOtpRequest = async ({ attemptToken, otp }) => {
   return response.data;
 };
 
+export const googleSigninRequest = async (idToken) => {
+  const response = await axios.post(
+    `${AUTH_API_BASE}/google-signin`,
+    { idToken },
+    {
+      withCredentials: true
+    }
+  );
+
+  return response.data;
+};
+
 export const logoutRequest = async () => {
   const response = await axios.post(
     `${AUTH_API_BASE}/logout`,

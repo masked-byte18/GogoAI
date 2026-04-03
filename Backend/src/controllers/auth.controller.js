@@ -2,6 +2,7 @@ const userModel = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
 const { sendLoginOtpEmail } = require('../services/mail.service');
 const { validateRegistrationEmail } = require('../services/email-validation.service');
 
@@ -14,6 +15,7 @@ const authCookieOptions = {
 const OTP_EXPIRY_MS = 5 * 60 * 1000;
 const OTP_MAX_ATTEMPTS = 5;
 const loginOtpStore = new Map();
+const googleClient = new OAuth2Client();
 
 function createSixDigitOtp() {
     return String(Math.floor(100000 + Math.random() * 900000));
@@ -28,8 +30,8 @@ function clearExpiredOtpAttempts() {
     }
 }
 
-async function registerUser(req,res){
-    const {fullName:{firstName,lastName},email,password} = req.body;
+async function registerUser(req, res) {
+    const { fullName: { firstName, lastName }, email, password } = req.body;
 
     const emailValidation = await validateRegistrationEmail(email);
     if (!emailValidation.acceptable) {
@@ -37,59 +39,60 @@ async function registerUser(req,res){
     }
 
     const normalizedEmail = emailValidation.normalizedEmail;
+    const isUserAlreadyExists = await userModel.findOne({ email: normalizedEmail });
 
-    const isUserAlreadyExists = await userModel.findOne({ email: normalizedEmail})
+    if (isUserAlreadyExists) {
+        return res.status(400).json({ message: 'User already exists' });
+    }
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    if(isUserAlreadyExists)
-    {
-        return res.status(400).json({message: "User already exists"});
-    }
+    const user = await userModel.create({
+        fullName: {
+            firstName,
+            lastName
+        },
+        email: normalizedEmail,
+        password: hashPassword,
+        authProvider: 'local'
+    });
 
-    const user =await userModel.create({
-        fullName:{
-            firstName,lastName
-        },email: normalizedEmail,password:hashPassword
-    })
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.cookie('token', token, authCookieOptions);
 
-    const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET)
-
-    res.cookie("token",token, authCookieOptions)
-
-    res.status(201).json({
-        message:"User registered successfullly",
+    return res.status(201).json({
+        message: 'User registered successfullly',
         user: {
             email: user.email,
             _id: user._id,
             fullName: user.fullName
         }
-    })
+    });
 }
 
-async function loginUser(req,res){
+async function loginUser(req, res) {
     return requestLoginOtp(req, res);
 }
 
-async function requestLoginOtp(req,res){
+async function requestLoginOtp(req, res) {
     clearExpiredOtpAttempts();
 
-    const { email,password} = req.body;
+    const { email, password } = req.body;
     const normalizedEmail = String(email || '').trim().toLowerCase();
 
-    const user = await userModel.findOne({
-        email: normalizedEmail
-    })
+    const user = await userModel.findOne({ email: normalizedEmail });
 
-    if(!user){
-        return res.status(400).json({ message: "Invalid email or password"});
+    if (!user) {
+        return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    const isPasswordValid = await bcrypt.compare(password,user.password);
+    if (!user.password) {
+        return res.status(400).json({ message: 'Use Google Sign-In for this account.' });
+    }
 
-    if(!isPasswordValid)
-    {
-        return res.status(400).json({message: "Invalid email or password"});
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     const otpCode = createSixDigitOtp();
@@ -168,18 +171,94 @@ async function verifyLoginOtp(req, res) {
         return res.status(404).json({ message: 'User not found.' });
     }
 
-    const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.cookie('token', token, authCookieOptions);
 
-    res.cookie("token",token, authCookieOptions);
-
-    res.status(200).json({
-        message:"User logged in successfully",
-        user:{
+    return res.status(200).json({
+        message: 'User logged in successfully',
+        user: {
             email: user.email,
             _id: user._id,
             fullName: user.fullName
         }
-    })
+    });
+}
+
+async function googleSignin(req, res) {
+    try {
+        const { idToken } = req.body;
+        const googleClientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+
+        if (!googleClientId) {
+            return res.status(500).json({ message: 'GOOGLE_CLIENT_ID is not configured on server.' });
+        }
+
+        if (!idToken) {
+            return res.status(400).json({ message: 'Google idToken is required.' });
+        }
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: googleClientId
+        });
+
+        const payload = ticket.getPayload();
+        const email = String(payload?.email || '').trim().toLowerCase();
+        const emailVerified = payload?.email_verified === true;
+        const googleSub = String(payload?.sub || '').trim();
+
+        if (!email || !emailVerified || !googleSub) {
+            return res.status(400).json({ message: 'Invalid Google account payload.' });
+        }
+
+        let user = await userModel.findOne({ email });
+
+        if (!user) {
+            const firstName = String(payload?.given_name || payload?.name || 'Google').trim() || 'Google';
+            const familyName = String(payload?.family_name || '').trim();
+            const fallbackLastName = firstName === 'Google' ? 'User' : 'Member';
+
+            user = await userModel.create({
+                email,
+                authProvider: 'google',
+                googleId: googleSub,
+                fullName: {
+                    firstName,
+                    lastName: familyName || fallbackLastName
+                }
+            });
+        } else {
+            let shouldSave = false;
+
+            if (!user.googleId) {
+                user.googleId = googleSub;
+                shouldSave = true;
+            }
+
+            if (user.authProvider !== 'google') {
+                user.authProvider = 'google';
+                shouldSave = true;
+            }
+
+            if (shouldSave) {
+                await user.save();
+            }
+        }
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        res.cookie('token', token, authCookieOptions);
+
+        return res.status(200).json({
+            message: 'Google sign-in successful',
+            user: {
+                email: user.email,
+                _id: user._id,
+                fullName: user.fullName
+            }
+        });
+    } catch (_error) {
+        return res.status(400).json({ message: 'Google sign-in failed. Try again.' });
+    }
 }
 
 async function checkRegistrationEmail(req, res) {
@@ -203,7 +282,7 @@ async function checkRegistrationEmail(req, res) {
 
 async function logoutUser(req, res) {
     res.clearCookie('token', authCookieOptions);
-    res.status(200).json({ message: 'Logged out successfully' });
+    return res.status(200).json({ message: 'Logged out successfully' });
 }
 
 module.exports = {
@@ -212,5 +291,6 @@ module.exports = {
     logoutUser,
     requestLoginOtp,
     verifyLoginOtp,
-    checkRegistrationEmail
-}
+    checkRegistrationEmail,
+    googleSignin
+};

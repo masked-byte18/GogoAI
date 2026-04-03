@@ -211,6 +211,35 @@
   width: 100%;
 }
 
+.google-auth-wrap {
+  margin-top: 1rem;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1rem 0 0.8rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.google-btn-host {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .auth-links {
   margin-top: 2rem;
   display: flex;

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { requestLoginOtpRequest, verifyLoginOtpRequest } from '../services/authApi';
+import GoogleSignInButton from '../components/auth/GoogleSignInButton';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -228,6 +229,17 @@ const Login = () => {
             >
               Resend OTP
             </button>
+          ) : null}
+
+          {!isOtpStep ? (
+            <GoogleSignInButton
+              onSuccess={() => {
+                navigate('/');
+              }}
+              onError={(message) => {
+                setAuthError(message);
+              }}
+            />
           ) : null}
         </form>
 
