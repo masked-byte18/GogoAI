@@ -2,14 +2,6 @@
 
 A modern full stack AI chat platform with custom Gems, real time messaging, secure authentication, and knowledge powered responses.
 
-## Local Development
-
-> For open source setup, run the project locally.
->
-> **Backend base URL for frontend files:** http://localhost:3000
-
-[![Run Local](https://img.shields.io/badge/Run-Local%20Setup-16a34a?style=for-the-badge&logo=github&logoColor=white)](http://localhost:3000)
-[![Backend URL](https://img.shields.io/badge/Backend-http%3A%2F%2Flocalhost%3A3000-0ea5e9?style=for-the-badge)](http://localhost:3000)
 
 ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-0ea5e9?style=for-the-badge)
 ![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-16a34a?style=for-the-badge)
