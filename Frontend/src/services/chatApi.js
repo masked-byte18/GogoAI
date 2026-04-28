@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com';
+const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : (import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com');
 const CHAT_API_BASE = `${API_BASE}/api/chat`;
 
 export const createChatRequest = async (title, botId = null) => {

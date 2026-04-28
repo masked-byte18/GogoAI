@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com';
+const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : (import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com');
 const AUTH_API_BASE = `${API_BASE}/api/auth`;
 
 export const checkRegistrationEmailRequest = async (email) => {
