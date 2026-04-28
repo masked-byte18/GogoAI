@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const CHAT_API_BASE = 'https://gogoai-7lzb.onrender.com/api/chat';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com';
+const CHAT_API_BASE = `${API_BASE}/api/chat`;
 
 export const createChatRequest = async (title, botId = null) => {
   const response = await axios.post(

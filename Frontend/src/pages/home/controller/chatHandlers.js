@@ -45,8 +45,6 @@ export const createNewChatState = ({
   setIsDraftChatActive,
   setDraftMessages,
   setRetryEditTarget,
-  setIsDraftResponding,
-  setThinkingChatId,
   setIsSidebarOpen
 }) => {
   if (draftReplyTimerRef.current) {
@@ -57,8 +55,6 @@ export const createNewChatState = ({
   setIsDraftChatActive(true);
   setDraftMessages([]);
   setRetryEditTarget(null);
-  setIsDraftResponding(false);
-  setThinkingChatId(null);
 
   if (window.innerWidth < 768) {
     setIsSidebarOpen(false);
@@ -141,7 +137,6 @@ export const selectChatState = ({
   setIsDraftChatActive,
   setDraftMessages,
   setRetryEditTarget,
-  setIsDraftResponding,
   chatId
 }) => {
   if (draftReplyTimerRef.current) {
@@ -152,7 +147,6 @@ export const selectChatState = ({
   setIsDraftChatActive(false);
   setDraftMessages([]);
   setRetryEditTarget(null);
-  setIsDraftResponding(false);
   dispatch(setCurrentChat(chatId));
 };
 

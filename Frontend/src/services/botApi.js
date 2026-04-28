@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BOT_API_BASE = 'https://gogoai-7lzb.onrender.com/api/bots';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com';
+const BOT_API_BASE = `${API_BASE}/api/bots`;
 
 export const fetchMyBotsRequest = async () => {
   const response = await axios.get(`${BOT_API_BASE}/mine`, {

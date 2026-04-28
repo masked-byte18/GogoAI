@@ -127,6 +127,7 @@ const getPreferredSootheVoice = () => {
 const ChatMessages = ({
   messages,
   isAiThinking = false,
+  stoppedMessageIds,
   onToggleFeedback,
   onRefreshResponse,
   onRetryUserMessage
@@ -240,10 +241,12 @@ const ChatMessages = ({
       )}
 
       {messages.map((msg, index) => {
-        const isIsolatedUserMessage =
+        const isStoppedUserMessage =
           msg.sender === 'user' &&
           index === messages.length - 1 &&
-          !isAiThinking;
+          !isAiThinking &&
+          stoppedMessageIds instanceof Set &&
+          stoppedMessageIds.has(msg.id);
 
         return (
         <div key={msg.id} className={`message-row ${msg.sender}`}>
@@ -257,7 +260,7 @@ const ChatMessages = ({
               )}
             </div>
 
-            {msg.sender === 'user' && isIsolatedUserMessage && (
+            {msg.sender === 'user' && isStoppedUserMessage && (
               <div className='message-actions user-message-actions'>
                 <button
                   type='button'

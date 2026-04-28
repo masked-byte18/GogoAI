@@ -89,6 +89,7 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
   const [retryInputFocusKey, setRetryInputFocusKey] = useState(0);
   const [aiLimitNotice, setAiLimitNotice] = useState('');
   const [retryEditTarget, setRetryEditTarget] = useState(null);
+  const [stoppedMessageIds, setStoppedMessageIds] = useState(() => new Set());
   const [draftGemContext, setDraftGemContext] = useState(() => {
     const stateDraftGem = location?.state?.draftGemContext;
     if (!stateDraftGem?.id) {
@@ -387,8 +388,6 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
       setIsDraftChatActive,
       setDraftMessages,
       setRetryEditTarget,
-      setIsDraftResponding,
-      setThinkingChatId,
       setIsSidebarOpen
     });
 
@@ -413,8 +412,6 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
       setIsDraftChatActive,
       setDraftMessages,
       setRetryEditTarget,
-      setIsDraftResponding,
-      setThinkingChatId,
       setIsSidebarOpen
     });
 
@@ -463,7 +460,6 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
       setIsDraftChatActive,
       setDraftMessages,
       setRetryEditTarget,
-      setIsDraftResponding,
       chatId
     });
 
@@ -709,7 +705,8 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
       setDraftMessages,
       ignoreNextAiResponseRef,
       setThinkingChatId,
-      setIsDraftResponding
+      setIsDraftResponding,
+      setStoppedMessageIds
     });
   };
 
@@ -755,6 +752,7 @@ export const useHomeChatController = ({ enableRouteSync = true } = {}) => {
     unlockPrivateGemsInManager,
     lockPrivateGemsInManager,
     startDraftChatWithGem,
+    stoppedMessageIds,
     retryInputFocusKey,
     setInputMessage,
     toggleSidebar

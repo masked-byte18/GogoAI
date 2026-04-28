@@ -296,7 +296,8 @@ export const stopThinkingFlow = ({
   setDraftMessages,
   ignoreNextAiResponseRef,
   setThinkingChatId,
-  setIsDraftResponding
+  setIsDraftResponding,
+  setStoppedMessageIds
 }) => {
   if (!isAiThinking) {
     return;
@@ -328,6 +329,15 @@ export const stopThinkingFlow = ({
       const currentMessages = messagesByChat[pendingPrompt.chatId] || [];
       const nextMessages = currentMessages.filter((message) => message.id !== pendingPrompt.messageId);
       dispatch(setChatMessages({ chatId: pendingPrompt.chatId, messages: nextMessages }));
+    }
+
+    // Track this message as explicitly stopped so the retry button shows
+    if (pendingPrompt.messageId != null) {
+      setStoppedMessageIds?.((prev) => {
+        const next = new Set(prev);
+        next.add(pendingPrompt.messageId);
+        return next;
+      });
     }
   }
 

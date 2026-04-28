@@ -69,7 +69,8 @@ export const bootstrapAuthenticatedSession = async ({
       setDraftMessages([]);
     }
 
-    const tempSocket = io('https://gogoai-7lzb.onrender.com', {
+    const socketBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://gogoai-7lzb.onrender.com';
+    const tempSocket = io(socketBaseUrl, {
       withCredentials: true
     });
 

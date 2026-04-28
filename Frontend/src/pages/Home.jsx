@@ -42,6 +42,7 @@ const Home = () => {
     lockPrivateGems,
     startDraftChatWithGem,
     retryInputFocusKey,
+    stoppedMessageIds,
     setInputMessage,
     toggleSidebar
   } = useHomeChatController();
@@ -85,6 +86,7 @@ const Home = () => {
           <ChatMessages
             messages={messages}
             isAiThinking={isCurrentChatThinking}
+            stoppedMessageIds={stoppedMessageIds}
             onToggleFeedback={handleToggleFeedback}
             onRefreshResponse={handleRefreshResponse}
             onRetryUserMessage={handleRetryUserMessage}
@@ -94,7 +96,7 @@ const Home = () => {
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}
             handleSendMessage={handleSendMessage}
-            isAiThinking={isAiThinking}
+            isAiThinking={isCurrentChatThinking}
             onStopThinking={handleStopThinking}
             retryInputFocusKey={retryInputFocusKey}
             aiLimitNotice={aiLimitNotice}
