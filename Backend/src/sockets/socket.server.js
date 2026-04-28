@@ -197,18 +197,51 @@ function initSocketServer(httpServer) {
             return;
           }
 
-          const response = await aiService.generateResponse(
-            [
-              {
-                role: "user",
-                parts: [{ text: trimmedContent }],
-              },
-            ],
-            {
-              signal: requestAbortController.signal,
-              systemInstruction: resolvedSystemInstruction || undefined,
-            }
-          );
+          // Query Pinecone for cross-chat memory in draft flow too
+          const draftMemoryFilter = { user: String(socket.user._id) };
+          if (botId) {
+            draftMemoryFilter.bot = String(botId);
+          }
+
+          const draftMemory = isMemoryEnabled && vectors
+            ? await queryMemory({
+                queryVector: vectors,
+                limit: 10,
+                metadata: draftMemoryFilter,
+              })
+            : [];
+
+          if (isMemoryEnabled && shouldStop()) {
+            return;
+          }
+
+          const draftContents = [];
+
+          // Inject long-term memory from past chats if available
+          const draftMemoryTexts = (draftMemory || [])
+            .map((item) => item.metadata?.text)
+            .filter(Boolean);
+
+          if (draftMemoryTexts.length > 0) {
+            draftContents.push({
+              role: "user",
+              parts: [
+                {
+                  text: `These are some previous messages from past conversations, use them as context to generate a response:\n${draftMemoryTexts.join("\n")}`,
+                },
+              ],
+            });
+          }
+
+          draftContents.push({
+            role: "user",
+            parts: [{ text: trimmedContent }],
+          });
+
+          const response = await aiService.generateResponse(draftContents, {
+            signal: requestAbortController.signal,
+            systemInstruction: resolvedSystemInstruction || undefined,
+          });
 
           if (shouldStop()) {
             return;
@@ -259,7 +292,7 @@ function initSocketServer(httpServer) {
                 metadata: {
                   chat: String(committedChat._id),
                   user: String(socket.user._id),
-                  bot: botId ? String(botId) : '',
+                  ...(botId ? { bot: String(botId) } : {}),
                   text: trimmedContent,
                 },
               }),
@@ -269,7 +302,7 @@ function initSocketServer(httpServer) {
                 metadata: {
                   chat: String(committedChat._id),
                   user: String(socket.user._id),
-                  bot: botId ? String(botId) : '',
+                  ...(botId ? { bot: String(botId) } : {}),
                   text: response,
                 },
               }),
@@ -310,15 +343,16 @@ function initSocketServer(httpServer) {
           return;
         }
 
+        const memoryFilter = { user: String(socket.user._id) };
+        if (botId) {
+          memoryFilter.bot = String(botId);
+        }
+
         const memoryPromise = isMemoryEnabled
           ? queryMemory({
               queryVector: vectors,
-              limit: 5,
-              metadata: {
-                user: String(socket.user._id),
-                chat: String(messagePayload.chat),
-                bot: botId ? String(botId) : ''
-              }
+              limit: 10,
+              metadata: memoryFilter
             })
           : Promise.resolve([]);
 
@@ -416,7 +450,7 @@ function initSocketServer(httpServer) {
               metadata: {
                 chat: String(messagePayload.chat),
                 user: String(socket.user._id),
-                bot: botId ? String(botId) : '',
+                ...(botId ? { bot: String(botId) } : {}),
                 text: trimmedContent,
               },
             }),
@@ -426,7 +460,7 @@ function initSocketServer(httpServer) {
               metadata: {
                 chat: String(messagePayload.chat),
                 user: String(socket.user._id),
-                bot: botId ? String(botId) : '',
+                ...(botId ? { bot: String(botId) } : {}),
                 text: response,
               },
             }),
